@@ -9,27 +9,23 @@ use crate::gpu::{
 };
 
 #[test]
-pub fn test_bigint_add() {
+pub fn test_bigint_sub() {
     let log_limb_size = 13;
     let num_limbs = 20;
-    let a = BigUint::parse_bytes(b"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", 16).unwrap();
-    let b = BigUint::parse_bytes(b"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", 16).unwrap();
-    let expected = &a + &b;
+    let a = BigUint::parse_bytes(b"ab655e9a2ca55660b44d1e5c37b00159aa76fed00000010a11800000000010", 16).unwrap();
+    let b = BigUint::parse_bytes(b"ab655e9a2ca55660b44d1e5c37b00159aa76fed00000010a11800000000001", 16).unwrap();
+    let expected = &a - &b;
 
-    // We are testing add_wide, so the sum should overflow
-    assert!(expected > BigUint::from(2u32).pow(256));
-    
     let a_limbs = bigint::from_biguint_le(&a, num_limbs, log_limb_size);
     let b_limbs = bigint::from_biguint_le(&b, num_limbs, log_limb_size);
-    let expected_limbs = bigint::from_biguint_le(&expected, num_limbs + 1, log_limb_size);
-    let expected_limbs_2 = bigint::add_wide(&a_limbs, &b_limbs, log_limb_size);
-
+    let expected_limbs = bigint::from_biguint_le(&expected, num_limbs, log_limb_size);
+    let expected_limbs_2 = bigint::sub(&a_limbs, &b_limbs, log_limb_size);
     assert!(bigint::eq(&expected_limbs, &expected_limbs_2));
 
     let device = get_default_device();
     let a_buf = create_buffer(&device, &a_limbs);
     let b_buf = create_buffer(&device, &b_limbs);
-    let result_buf = create_empty_buffer(&device, num_limbs + 1);
+    let result_buf = create_empty_buffer(&device, num_limbs);
 
     let command_queue = device.new_command_queue();
     let command_buffer = command_queue.new_command_buffer();
@@ -38,7 +34,7 @@ pub fn test_bigint_add() {
     let encoder = command_buffer.compute_command_encoder_with_descriptor(compute_pass_descriptor);
 
     let library_path =
-        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../metal/tests/bigint_add_wide.metallib");
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../metal/tests/bigint_sub.metallib");
     let library = device.new_library_with_file(library_path).unwrap();
     let kernel = library.get_function("run", None).unwrap();
 
@@ -77,13 +73,13 @@ pub fn test_bigint_add() {
 
     // Check if ptr is not null
     if !ptr.is_null() {
-        let len = num_limbs + 1;
+        let len = num_limbs;
         result_limbs = unsafe { std::slice::from_raw_parts(ptr, len) }.to_vec();
     } else {
         panic!("Pointer is null");
     }
 
-    let result = bigint::to_biguint_le(&result_limbs, num_limbs + 1, log_limb_size);
+    let result = bigint::to_biguint_le(&result_limbs, num_limbs, log_limb_size);
     assert!(bigint::eq(&result_limbs, &expected_limbs));
     assert!(result == expected);
 }

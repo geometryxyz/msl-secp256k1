@@ -15,3 +15,13 @@ rm ./metal/tests/bigint_add_unsafe.ir
 xcrun -sdk macosx metal -c ./metal/tests/bigint_add_wide.metal -o ./metal/tests/bigint_add_wide.ir  
 xcrun -sdk macosx metallib ./metal/tests/bigint_add_wide.ir -o ./metal/tests/bigint_add_wide.metallib
 rm ./metal/tests/bigint_add_wide.ir
+
+# bigint_sub.metal
+xcrun -sdk macosx metal -c ./metal/tests/bigint_sub.metal -o ./metal/tests/bigint_sub.ir  
+xcrun -sdk macosx metallib ./metal/tests/bigint_sub.ir -o ./metal/tests/bigint_sub.metallib
+rm ./metal/tests/bigint_sub.ir
+
+# ff_add.metal
+xcrun -sdk macosx metal -c ./metal/tests/ff_add.metal -o ./metal/tests/ff_add.ir  
+xcrun -sdk macosx metallib ./metal/tests/ff_add.ir -o ./metal/tests/ff_add.metallib
+rm ./metal/tests/ff_add.ir
