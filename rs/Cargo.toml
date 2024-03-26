@@ -11,3 +11,8 @@ num = "0.4.1"
 
 [dependencies.objc]
 version = "0.2.4"
+
+[dev-dependencies]
+multiprecision = { git = "ssh://git@github.com/geometryresearch/multiprecision.git" }
+#multiprecision = { path = "../multiprecision" }
+num-bigint = "0.4.4"

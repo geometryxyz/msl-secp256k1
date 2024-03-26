@@ -1,5 +1,5 @@
-use metal::*;
 use objc::rc::autoreleasepool;
+use metal::*;
 use std::path::PathBuf;
 use crate::gpu::{
     get_default_device,
@@ -10,7 +10,7 @@ use crate::gpu::{
 const NUM_SAMPLES: u64 = 2;
 
 #[test]
-fn test_add() {
+pub fn test_add() {
     // The number of elements to sum
     let num_elements = 512;
 
@@ -20,18 +20,6 @@ fn test_add() {
         let mut gpu_start = 0;
         // Returns the CPU and GPU timestamps at the same point in time
         device.sample_timestamps(&mut cpu_start, &mut gpu_start);
-
-        // Create a buffer that stores the GPU's runtime performance metrics
-        //let counter_sample_buffer = create_counter_sample_buffer(&device);
-
-        // Create a buffer to store the results of the sampling?
-        let destination_buffer = device.new_buffer(
-            (std::mem::size_of::<u64>() * NUM_SAMPLES as usize) as u64,
-            MTLResourceOptions::StorageModeShared,
-        );
-
-        //let counter_sampling_point = MTLCounterSamplingPoint::AtStageBoundary;
-        //assert!(device.supports_counter_sampling(counter_sampling_point));
 
         // Create a command buffer from a command queue (?)
         let command_queue = device.new_command_queue();
@@ -70,14 +58,8 @@ fn test_add() {
         encoder.dispatch_thread_groups(thread_group_count, thread_group_size);
         encoder.end_encoding();
 
-        //resolve_samples_into_buffer(command_buffer, &counter_sample_buffer, &destination_buffer);
-
         command_buffer.commit();
         command_buffer.wait_until_completed();
-        //let mut cpu_end = 0;
-        //let mut gpu_end = 0;
-        // Returns the CPU and GPU timestamps at the same point in time
-        //device.sample_timestamps(&mut cpu_end, &mut gpu_end);
 
         let ptr = sum.contents() as *mut u32;
         println!("Compute shader sum: {}", unsafe { *ptr });
@@ -96,7 +78,7 @@ fn test_add() {
     });
 }
 
-fn create_pipeline_state(device: &Device) -> ComputePipelineState {
+pub fn create_pipeline_state(device: &Device) -> ComputePipelineState {
     let library_path =
         PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../metal/u32_add.metallib");
     let library = device.new_library_with_file(library_path).unwrap();
@@ -112,7 +94,7 @@ fn create_pipeline_state(device: &Device) -> ComputePipelineState {
         .unwrap()
 }
 
-fn handle_compute_pass_sample_buffer_attachment(
+pub fn handle_compute_pass_sample_buffer_attachment(
     compute_pass_descriptor: &ComputePassDescriptorRef,
     counter_sample_buffer: &CounterSampleBufferRef,
 ) {
@@ -126,7 +108,7 @@ fn handle_compute_pass_sample_buffer_attachment(
     sample_buffer_attachment_descriptor.set_end_of_encoder_sample_index(1);
 }
 
-fn resolve_samples_into_buffer(
+pub fn resolve_samples_into_buffer(
     command_buffer: &CommandBufferRef,
     counter_sample_buffer: &CounterSampleBufferRef,
     destination_buffer: &BufferRef,
@@ -143,7 +125,7 @@ fn resolve_samples_into_buffer(
     blit_encoder.end_encoding();
 }
 
-fn handle_timestamps(
+pub fn handle_timestamps(
     resolved_sample_buffer: &BufferRef,
     cpu_start: u64,
     cpu_end: u64,
@@ -166,7 +148,7 @@ fn handle_timestamps(
     println!("Compute pass duration: {} µs", micros);
 }
 
-fn create_counter_sample_buffer(device: &Device) -> CounterSampleBuffer {
+pub fn create_counter_sample_buffer(device: &Device) -> CounterSampleBuffer {
     // Create a buffer that stores the GPU's runtime performance metrics
     // https://developer.apple.com/documentation/metal/gpu_counters_and_counter_sample_buffers/creating_a_counter_sample_buffer_to_store_a_gpu_s_counter_data_during_a_pass
     let counter_sample_buffer_desc = metal::CounterSampleBufferDescriptor::new();
@@ -184,7 +166,7 @@ fn create_counter_sample_buffer(device: &Device) -> CounterSampleBuffer {
         .unwrap()
 }
 
-fn create_input_and_output_buffers(
+pub fn create_input_and_output_buffers(
     device: &Device,
     num_elements: u32,
 ) -> (metal::Buffer, metal::Buffer) {
@@ -196,7 +178,7 @@ fn create_input_and_output_buffers(
 }
 
 /// <https://developer.apple.com/documentation/metal/gpu_counters_and_counter_sample_buffers/converting_gpu_timestamps_into_cpu_time>
-fn microseconds_between_begin(begin: u64, end: u64, gpu_time_span: u64, cpu_time_span: u64) -> f64 {
+pub fn microseconds_between_begin(begin: u64, end: u64, gpu_time_span: u64, cpu_time_span: u64) -> f64 {
     let time_span = (end as f64) - (begin as f64);
     let nanoseconds = time_span / (gpu_time_span as f64) * (cpu_time_span as f64);
     nanoseconds / 1000.0
