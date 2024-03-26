@@ -83,8 +83,6 @@ pub fn test_ff_sub() {
     }
 
     let result = bigint::to_biguint_le(&result_limbs, num_limbs, log_limb_size);
-    println!("{:?}", result_limbs);
-    println!("{:?}", expected_limbs);
     assert!(result == expected);
     assert!(result_limbs == expected_limbs);
 }

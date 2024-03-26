@@ -37,7 +37,7 @@ pub fn test_bigint_add_unsafe() {
     let library_path =
         PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../metal/tests/bigint_add_unsafe.metallib");
     let library = device.new_library_with_file(library_path).unwrap();
-    let kernel = library.get_function("bigint_add_unsafe", None).unwrap();
+    let kernel = library.get_function("run", None).unwrap();
 
     let pipeline_state_descriptor = ComputePipelineDescriptor::new();
     pipeline_state_descriptor.set_compute_function(Some(&kernel));
