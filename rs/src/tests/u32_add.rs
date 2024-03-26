@@ -80,7 +80,7 @@ pub fn test_add() {
 
 pub fn create_pipeline_state(device: &Device) -> ComputePipelineState {
     let library_path =
-        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../metal/u32_add.metallib");
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../metal/tests/u32_add.metallib");
     let library = device.new_library_with_file(library_path).unwrap();
     let kernel = library.get_function("sum", None).unwrap();
 

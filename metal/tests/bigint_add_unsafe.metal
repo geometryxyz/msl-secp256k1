@@ -20,16 +20,4 @@ kernel void bigint_add_unsafe(
         result->limbs[i] = c & mask;
         carry = c >> 13;
     }
-
-    /*
-    let mask = 2u32.pow(log_limb_size as u32) - 1u32;
-    let mut res = vec![0u32; num_limbs];
-    let mut carry = 0u32;
-
-    for i in 0..num_limbs {
-        let c = lhs[i] + rhs[i] + carry;
-        res[i] = c & mask;
-        carry = c >> log_limb_size;
-    }
-    */
 }
