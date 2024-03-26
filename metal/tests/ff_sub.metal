@@ -20,26 +20,20 @@ kernel void run(
     b.limbs = rhs->limbs;
     p.limbs = prime->limbs;
 
-    // Assign p to p_wide
-    BigIntWide p_wide;
-    for (uint i = 0; i < num_limbs; i ++) {
-        p_wide.limbs[i] = p.limbs[i];
-    }
-
-    // a + b
-    BigIntWide sum_wide = bigint_add_wide(a, b);
-
-    // if (a + b) >= p
-    if (bigint_wide_gte(sum_wide, p_wide, num_limbs + 1)) {
-        // s = a + b - p
-        BigIntWide s = bigint_sub_wide(sum_wide, p_wide, num_limbs + 1, log_limb_size);
-
+    // if a >= b
+    if (bigint_gte(a, b, num_limbs)) {
+        // a - b
+        BigInt res = bigint_sub(a, b, num_limbs, log_limb_size);
         for (uint i = 0; i < num_limbs; i ++) {
-            result->limbs[i] = s.limbs[i];
+            result->limbs[i] = res.limbs[i];
         }
     } else {
+        // p - (b - a)
+        BigInt r = bigint_sub(b, a, num_limbs, log_limb_size);
+        BigInt res = bigint_sub(p, r, num_limbs, log_limb_size);
         for (uint i = 0; i < num_limbs; i ++) {
-            result->limbs[i] = sum_wide.limbs[i];
+            result->limbs[i] = res.limbs[i];
         }
     }
+
 }

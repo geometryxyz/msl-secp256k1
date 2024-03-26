@@ -9,14 +9,14 @@ use crate::gpu::{
 };
 
 #[test]
-pub fn test_ff_add() {
+pub fn test_ff_sub() {
     let log_limb_size = 13;
     let num_limbs = 20;
 
     let p = BigUint::parse_bytes(b"fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141", 16).unwrap();
-    let a = BigUint::parse_bytes(b"faaaaaaaaaaaaafffffffffffffffffebaaedce6af48a03bbfd25e8cd0364101", 16).unwrap();
-    let b = BigUint::parse_bytes(b"fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364100", 16).unwrap();
-    let expected = (&a + &b) % &p;
+    let a = BigUint::parse_bytes(b"fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364100", 16).unwrap();
+    let b = BigUint::parse_bytes(b"faaaaaaaaaaaaafffffffffffffffffebaaedce6af48a03bbfd25e8cd0364101", 16).unwrap();
+    let expected = (&a - &b) % &p;
 
     let a_limbs = bigint::from_biguint_le(&a, num_limbs, log_limb_size);
     let b_limbs = bigint::from_biguint_le(&b, num_limbs, log_limb_size);
@@ -36,7 +36,7 @@ pub fn test_ff_add() {
     let encoder = command_buffer.compute_command_encoder_with_descriptor(compute_pass_descriptor);
 
     let library_path =
-        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../metal/tests/ff_add.metallib");
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../metal/tests/ff_sub.metallib");
     let library = device.new_library_with_file(library_path).unwrap();
     let kernel = library.get_function("run", None).unwrap();
 
@@ -83,6 +83,8 @@ pub fn test_ff_add() {
     }
 
     let result = bigint::to_biguint_le(&result_limbs, num_limbs, log_limb_size);
+    println!("{:?}", result_limbs);
+    println!("{:?}", expected_limbs);
     assert!(result == expected);
     assert!(result_limbs == expected_limbs);
 }

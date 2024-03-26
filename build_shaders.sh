@@ -25,3 +25,8 @@ rm ./metal/tests/bigint_sub.ir
 xcrun -sdk macosx metal -c ./metal/tests/ff_add.metal -o ./metal/tests/ff_add.ir  
 xcrun -sdk macosx metallib ./metal/tests/ff_add.ir -o ./metal/tests/ff_add.metallib
 rm ./metal/tests/ff_add.ir
+
+# ff_sub.metal
+xcrun -sdk macosx metal -c ./metal/tests/ff_sub.metal -o ./metal/tests/ff_sub.ir  
+xcrun -sdk macosx metallib ./metal/tests/ff_sub.ir -o ./metal/tests/ff_sub.metallib
+rm ./metal/tests/ff_sub.ir
