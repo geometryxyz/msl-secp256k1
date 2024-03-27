@@ -8,6 +8,32 @@ struct BigIntWide {
     array<uint, 21> limbs;
 };
 
+BigInt bigint_zero() {
+    BigInt s;
+    for (uint i = 0; i < 20; i ++) {
+        s.limbs[i] = 0;
+    }
+    return s;
+}
+
+BigInt bigint_add_unsafe(
+    BigInt lhs,
+    BigInt rhs,
+    uint num_limbs,
+    uint log_limb_size
+) {
+    BigInt result;
+    uint mask = (1 << log_limb_size) - 1;
+    uint carry = 0;
+
+    for (uint i = 0; i < num_limbs; i ++) {
+        uint c = lhs.limbs[i] + rhs.limbs[i] + carry;
+        result.limbs[i] = c & mask;
+        carry = c >> log_limb_size;
+    }
+    return result;
+}
+
 BigIntWide bigint_add_wide(
     BigInt lhs,
     BigInt rhs
@@ -29,9 +55,11 @@ BigIntWide bigint_add_wide(
 BigInt bigint_sub(
     BigInt lhs,
     BigInt rhs,
-    uint num_limbs,
     uint log_limb_size
 ) {
+    // TODO: assertion?
+    uint num_limbs = lhs.limbs.size();
+
     uint two_pow_word_size = 1 << log_limb_size;
     uint borrow = 0;
 
@@ -79,9 +107,11 @@ BigIntWide bigint_sub_wide(
 
 bool bigint_gte(
     BigInt lhs,
-    BigInt rhs,
-    uint num_limbs
+    BigInt rhs
 ) {
+    // TODO: assertion?
+    uint num_limbs = lhs.limbs.size();
+
     for (uint idx = 0; idx < num_limbs; idx ++) {
         uint i = num_limbs - 1 - idx;
         if (lhs.limbs[i] < rhs.limbs[i]) {

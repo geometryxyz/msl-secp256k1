@@ -1,7 +1,7 @@
 using namespace metal;
 #include <metal_stdlib>
 #include <metal_math>
-#include "ff.metal"
+#include "mont.metal"
 
 kernel void run(
     device BigInt* lhs [[ buffer(0) ]],
@@ -12,6 +12,7 @@ kernel void run(
 ) {
     const uint num_limbs = 20;
     const uint log_limb_size = 13;
+    const uint n0 = 4415;
 
     BigInt a;
     BigInt b;
@@ -20,6 +21,7 @@ kernel void run(
     b.limbs = rhs->limbs;
     p.limbs = prime->limbs;
 
-    BigInt res = ff_sub(a, b, p, num_limbs, log_limb_size);
+    BigInt res = mont_mul_optimised(a, b, p, n0, num_limbs, log_limb_size);
     result->limbs = res.limbs;
+
 }
