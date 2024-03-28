@@ -8,11 +8,11 @@ edition = "2021"
 [dependencies]
 metal = "0.27.0"
 num = "0.4.1"
+#ramhorns = "1.0.0"
 
 [dependencies.objc]
 version = "0.2.4"
 
 [dev-dependencies]
 multiprecision = { git = "ssh://git@github.com/geometryresearch/multiprecision.git" }
-#multiprecision = { path = "../multiprecision" }
 num-bigint = "0.4.4"

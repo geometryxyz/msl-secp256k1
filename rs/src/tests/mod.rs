@@ -10,5 +10,3 @@ pub mod ff_add;
 pub mod ff_sub;
 #[cfg(test)]
 pub mod mont_mul_optimised;
-#[cfg(test)]
-pub mod u32_add;

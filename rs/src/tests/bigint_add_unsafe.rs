@@ -1,7 +1,7 @@
 use metal::*;
-use std::path::PathBuf;
 use num_bigint::BigUint;
 use multiprecision::bigint;
+use crate::shader::compile_metal;
 use crate::gpu::{
     get_default_device,
     create_buffer,
@@ -34,8 +34,7 @@ pub fn test_bigint_add_unsafe() {
     let compute_pass_descriptor = ComputePassDescriptor::new();
     let encoder = command_buffer.compute_command_encoder_with_descriptor(compute_pass_descriptor);
 
-    let library_path =
-        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../metal/tests/bigint_add_unsafe.metallib");
+    let library_path = compile_metal("../metal/tests/", "bigint_add_unsafe.metal");
     let library = device.new_library_with_file(library_path).unwrap();
     let kernel = library.get_function("run", None).unwrap();
 

@@ -1,0 +1,2 @@
+#define NUM_LIMBS 20
+#define NUM_LIMBS_WIDE 21

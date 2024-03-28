@@ -1,16 +1,17 @@
 using namespace metal;
+#include "constants.metal"
 
 struct BigInt {
-    array<uint, 20> limbs;
+    array<uint, NUM_LIMBS> limbs;
 };
 
 struct BigIntWide {
-    array<uint, 21> limbs;
+    array<uint, NUM_LIMBS_WIDE> limbs;
 };
 
 BigInt bigint_zero() {
     BigInt s;
-    for (uint i = 0; i < 20; i ++) {
+    for (uint i = 0; i < NUM_LIMBS; i ++) {
         s.limbs[i] = 0;
     }
     return s;
