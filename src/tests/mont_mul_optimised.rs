@@ -1,7 +1,7 @@
 use metal::*;
 use num_bigint::BigUint;
 use multiprecision::{ bigint, mont };
-use crate::shader::compile_metal;
+use crate::shader::{ write_constants, compile_metal };
 use crate::gpu::{
     get_default_device,
     create_buffer,
@@ -9,11 +9,22 @@ use crate::gpu::{
 };
 
 #[test]
-pub fn test_mont_mul_optimised() {
-    let log_limb_size = 13;
-    let num_limbs = 20;
+#[serial_test::serial]
+pub fn test_mont_mul_optimised_12() {
+    do_test_mont_mul_optimised(12);
+}
 
+#[test]
+#[serial_test::serial]
+pub fn test_mont_mul_optimised_13() {
+    do_test_mont_mul_optimised(13);
+}
+
+pub fn do_test_mont_mul_optimised(log_limb_size: u32) {
     let p = BigUint::parse_bytes(b"fffffffffffffffffffffffffffffffebaaedce6af48a03bbfd25e8cd0364141", 16).unwrap();
+    let p_bitwidth = mont::calc_bitwidth(&p);
+    let num_limbs = mont::calc_num_limbs(log_limb_size, p_bitwidth);
+
     let a = BigUint::parse_bytes(b"10ab655e9a2ca55660b44d1e5c37b00159aa76fed00000010a11800000000001", 16).unwrap();
     let b = BigUint::parse_bytes(b"11ab655e9a2ca55660b44d1e5c37b00159aa76fed00000010a11800000000001", 16).unwrap();
 
@@ -45,7 +56,8 @@ pub fn test_mont_mul_optimised() {
     let compute_pass_descriptor = ComputePassDescriptor::new();
     let encoder = command_buffer.compute_command_encoder_with_descriptor(compute_pass_descriptor);
 
-    let library_path = compile_metal("../metal/tests/", "mont_mul_optimised.metal");
+    write_constants("./metal/tests/", num_limbs, log_limb_size, n0);
+    let library_path = compile_metal("./metal/tests/", "mont_mul_optimised.metal");
     let library = device.new_library_with_file(library_path).unwrap();
     let kernel = library.get_function("run", None).unwrap();
 

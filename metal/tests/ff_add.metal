@@ -10,9 +10,6 @@ kernel void run(
     device BigInt* result [[ buffer(3) ]],
     uint gid [[ thread_position_in_grid ]]
 ) {
-    const uint num_limbs = 20;
-    const uint log_limb_size = 13;
-
     BigInt a;
     BigInt b;
     BigInt p;
@@ -20,6 +17,6 @@ kernel void run(
     b.limbs = rhs->limbs;
     p.limbs = prime->limbs;
 
-    BigInt res = ff_add(a, b, p, num_limbs, log_limb_size);
+    BigInt res = ff_add(a, b, p);
     result->limbs = res.limbs;
 }

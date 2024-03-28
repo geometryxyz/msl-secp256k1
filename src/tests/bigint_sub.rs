@@ -1,7 +1,7 @@
 use metal::*;
 use num_bigint::BigUint;
 use multiprecision::bigint;
-use crate::shader::compile_metal;
+use crate::shader::{ write_constants, compile_metal };
 use crate::gpu::{
     get_default_device,
     create_buffer,
@@ -9,6 +9,7 @@ use crate::gpu::{
 };
 
 #[test]
+#[serial_test::serial]
 pub fn test_bigint_sub() {
     let log_limb_size = 13;
     let num_limbs = 20;
@@ -33,7 +34,8 @@ pub fn test_bigint_sub() {
     let compute_pass_descriptor = ComputePassDescriptor::new();
     let encoder = command_buffer.compute_command_encoder_with_descriptor(compute_pass_descriptor);
 
-    let library_path = compile_metal("../metal/tests/", "bigint_sub.metal");
+    write_constants("./metal/tests/", num_limbs, log_limb_size, 0);
+    let library_path = compile_metal("./metal/tests/", "bigint_sub.metal");
     let library = device.new_library_with_file(library_path).unwrap();
     let kernel = library.get_function("run", None).unwrap();
 

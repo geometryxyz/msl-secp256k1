@@ -13,6 +13,7 @@
 use std::string::String;
 use std::path::PathBuf;
 use std::process::Command;
+use std::fs;
 
 pub fn compile_metal(
     path_from_cargo_manifest_dir: &str,
@@ -46,6 +47,27 @@ pub fn compile_metal(
     }
 
     lib
+}
+
+pub fn write_constants(
+    filepath: &str,
+    num_limbs: usize,
+    log_limb_size: u32,
+    n0: u32
+) {
+    let two_pow_word_size = 2u32.pow(log_limb_size);
+    let mask = two_pow_word_size - 1u32;
+
+    let mut data = "".to_owned();
+    data += format!("#define NUM_LIMBS {}\n", num_limbs).as_str();
+    data += format!("#define NUM_LIMBS_WIDE {}\n", num_limbs + 1).as_str();
+    data += format!("#define LOG_LIMB_SIZE {}\n", log_limb_size).as_str();
+    data += format!("#define TWO_POW_WORD_SIZE {}\n", two_pow_word_size).as_str();
+    data += format!("#define MASK {}\n", mask).as_str();
+    data += format!("#define N0 {}\n", n0).as_str();
+
+    let output_path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join(filepath).join("constants.metal");
+    fs::write(output_path, data).expect("Unable to write constants file");
 }
 
 //#[cfg(test)]

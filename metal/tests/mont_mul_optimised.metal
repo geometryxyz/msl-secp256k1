@@ -10,10 +10,6 @@ kernel void run(
     device BigInt* result [[ buffer(3) ]],
     uint gid [[ thread_position_in_grid ]]
 ) {
-    const uint num_limbs = 20;
-    const uint log_limb_size = 13;
-    const uint n0 = 4415;
-
     BigInt a;
     BigInt b;
     BigInt p;
@@ -21,7 +17,7 @@ kernel void run(
     b.limbs = rhs->limbs;
     p.limbs = prime->limbs;
 
-    BigInt res = mont_mul_optimised(a, b, p, n0, num_limbs, log_limb_size);
+    BigInt res = mont_mul_optimised(a, b, p);
     result->limbs = res.limbs;
 
 }

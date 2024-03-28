@@ -6,13 +6,11 @@ using namespace metal;
 BigInt ff_add(
     BigInt a,
     BigInt b,
-    BigInt p,
-    uint num_limbs,
-    uint log_limb_size
+    BigInt p
 ) {
     // Assign p to p_wide
     BigIntWide p_wide;
-    for (uint i = 0; i < num_limbs; i ++) {
+    for (uint i = 0; i < NUM_LIMBS; i ++) {
         p_wide.limbs[i] = p.limbs[i];
     }
 
@@ -22,15 +20,15 @@ BigInt ff_add(
     BigInt res;
 
     // if (a + b) >= p
-    if (bigint_wide_gte(sum_wide, p_wide, num_limbs + 1)) {
+    if (bigint_wide_gte(sum_wide, p_wide)) {
         // s = a + b - p
-        BigIntWide s = bigint_sub_wide(sum_wide, p_wide, num_limbs + 1, log_limb_size);
+        BigIntWide s = bigint_sub_wide(sum_wide, p_wide);
 
-        for (uint i = 0; i < num_limbs; i ++) {
+        for (uint i = 0; i < NUM_LIMBS; i ++) {
             res.limbs[i] = s.limbs[i];
         }
     } else {
-        for (uint i = 0; i < num_limbs; i ++) {
+        for (uint i = 0; i < NUM_LIMBS; i ++) {
             res.limbs[i] = sum_wide.limbs[i];
         }
     }
@@ -41,23 +39,21 @@ BigInt ff_add(
 BigInt ff_sub(
     BigInt a,
     BigInt b,
-    BigInt p,
-    uint num_limbs,
-    uint log_limb_size
+    BigInt p
 ) {
     // if a >= b
     if (bigint_gte(a, b)) {
         // a - b
-        BigInt res = bigint_sub(a, b, log_limb_size);
-        for (uint i = 0; i < num_limbs; i ++) {
+        BigInt res = bigint_sub(a, b);
+        for (uint i = 0; i < NUM_LIMBS; i ++) {
             res.limbs[i] = res.limbs[i];
         }
         return res;
     } else {
         // p - (b - a)
-        BigInt r = bigint_sub(b, a, log_limb_size);
-        BigInt res = bigint_sub(p, r, log_limb_size);
-        for (uint i = 0; i < num_limbs; i ++) {
+        BigInt r = bigint_sub(b, a);
+        BigInt res = bigint_sub(p, r);
+        for (uint i = 0; i < NUM_LIMBS; i ++) {
             res.limbs[i] = res.limbs[i];
         }
         return res;

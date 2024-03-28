@@ -13,6 +13,6 @@ kernel void run(
     BigInt b;
     a.limbs = lhs->limbs;
     b.limbs = rhs->limbs;
-    BigInt res = bigint_add_unsafe(a, b, 20, 13);
+    BigInt res = bigint_add_unsafe(a, b);
     result->limbs = res.limbs;
 }

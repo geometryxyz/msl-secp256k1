@@ -5,11 +5,10 @@ using namespace metal;
 
 BigInt conditional_reduce(
     BigInt x,
-    BigInt y,
-    uint log_limb_size
+    BigInt y
 ) {
     if (bigint_gte(x, y)) {
-        return bigint_sub(x, y, log_limb_size);
+        return bigint_sub(x, y);
     }
 
     return x;
@@ -18,35 +17,30 @@ BigInt conditional_reduce(
 BigInt mont_mul_optimised(
     BigInt x,
     BigInt y,
-    BigInt p,
-    uint n0,
-    uint num_limbs,
-    uint log_limb_size
+    BigInt p
 ) {
     BigInt s = bigint_zero();
 
-    uint mask = (1 << log_limb_size) - 1;
-
-    for (uint i = 0; i < num_limbs; i ++) {
+    for (uint i = 0; i < NUM_LIMBS; i ++) {
         uint t = s.limbs[0] + x.limbs[i] * y.limbs[0];
-        uint tprime = t & mask;
-        uint qi = (n0 * tprime) & mask;
-        uint c = (t + qi * p.limbs[0]) >> log_limb_size;
+        uint tprime = t & MASK;
+        uint qi = (N0 * tprime) & MASK;
+        uint c = (t + qi * p.limbs[0]) >> LOG_LIMB_SIZE;
         s.limbs[0] = s.limbs[1] + x.limbs[i] * y.limbs[1] + qi * p.limbs[1] + c;
 
-        for (uint j = 2; j < num_limbs; j ++) {
+        for (uint j = 2; j < NUM_LIMBS; j ++) {
             s.limbs[j - 1] = s.limbs[j] + x.limbs[i] * y.limbs[j] + qi * p.limbs[j];
         }
-        s.limbs[num_limbs - 2] = x.limbs[i] * y.limbs[num_limbs - 1] + qi * p.limbs[num_limbs - 1];
+        s.limbs[NUM_LIMBS - 2] = x.limbs[i] * y.limbs[NUM_LIMBS - 1] + qi * p.limbs[NUM_LIMBS - 1];
     }
 
     uint c = 0;
-    for (uint i = 0; i < num_limbs; i ++) {
+    for (uint i = 0; i < NUM_LIMBS; i ++) {
         uint v = s.limbs[i] + c;
-        c = v >> log_limb_size;
-        s.limbs[i] = v & mask;
+        c = v >> LOG_LIMB_SIZE;
+        s.limbs[i] = v & MASK;
     }
 
-    BigInt res = conditional_reduce(s, p, log_limb_size);
+    BigInt res = conditional_reduce(s, p);
     return res;
 }

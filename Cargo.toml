@@ -16,3 +16,4 @@ version = "0.2.4"
 [dev-dependencies]
 multiprecision = { git = "ssh://git@github.com/geometryresearch/multiprecision.git" }
 num-bigint = "0.4.4"
+serial_test = "3.0.0"
