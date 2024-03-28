@@ -34,7 +34,7 @@ pub fn test_bigint_sub() {
     let compute_pass_descriptor = ComputePassDescriptor::new();
     let encoder = command_buffer.compute_command_encoder_with_descriptor(compute_pass_descriptor);
 
-    write_constants("./metal/tests/", num_limbs, log_limb_size, 0);
+    write_constants("./metal/tests/", num_limbs, log_limb_size, 0, 0);
     let library_path = compile_metal("./metal/tests/", "bigint_sub.metal");
     let library = device.new_library_with_file(library_path).unwrap();
     let kernel = library.get_function("run", None).unwrap();

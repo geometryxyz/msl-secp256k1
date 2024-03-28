@@ -10,14 +10,14 @@ use crate::gpu::{
 
 #[test]
 #[serial_test::serial]
-pub fn test_mont_mul_12() {
-    do_test(12);
+pub fn test_mont_mul_14() {
+    do_test(14);
 }
 
 #[test]
 #[serial_test::serial]
-pub fn test_mont_mul_13() {
-    do_test(13);
+pub fn test_mont_mul_15() {
+    do_test(15);
 }
 
 pub fn do_test(log_limb_size: u32) {
@@ -28,6 +28,7 @@ pub fn do_test(log_limb_size: u32) {
     let a = BigUint::parse_bytes(b"10ab655e9a2ca55660b44d1e5c37b00159aa76fed00000010a11800000000001", 16).unwrap();
     let b = BigUint::parse_bytes(b"11ab655e9a2ca55660b44d1e5c37b00159aa76fed00000010a11800000000001", 16).unwrap();
 
+    let nsafe = mont::calc_nsafe(log_limb_size);
     let r = mont::calc_mont_radix(num_limbs, log_limb_size);
     let res = mont::calc_rinv_and_n0(&p, &r, log_limb_size);
     let n0 = res.1;
@@ -40,7 +41,7 @@ pub fn do_test(log_limb_size: u32) {
     let ar_limbs = bigint::from_biguint_le(&a_r, num_limbs, log_limb_size);
     let br_limbs = bigint::from_biguint_le(&b_r, num_limbs, log_limb_size);
     let p_limbs = bigint::from_biguint_le(&p, num_limbs, log_limb_size);
-    let expected_limbs_2 = mont::mont_mul_optimised(&ar_limbs, &br_limbs, &p_limbs, n0, num_limbs, log_limb_size);
+    let expected_limbs_2 = mont::mont_mul_modified(&ar_limbs, &br_limbs, &p_limbs, n0, num_limbs, log_limb_size, nsafe);
 
     assert!(bigint::eq(&expected_limbs, &expected_limbs_2));
 
@@ -56,8 +57,8 @@ pub fn do_test(log_limb_size: u32) {
     let compute_pass_descriptor = ComputePassDescriptor::new();
     let encoder = command_buffer.compute_command_encoder_with_descriptor(compute_pass_descriptor);
 
-    write_constants("./metal/tests/", num_limbs, log_limb_size, n0, 1);
-    let library_path = compile_metal("./metal/tests/", "mont_mul_optimised.metal");
+    write_constants("./metal/tests/", num_limbs, log_limb_size, n0, nsafe);
+    let library_path = compile_metal("./metal/tests/", "mont_mul_modified.metal");
     let library = device.new_library_with_file(library_path).unwrap();
     let kernel = library.get_function("run", None).unwrap();
 
