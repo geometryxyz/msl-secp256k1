@@ -17,3 +17,4 @@ version = "0.2.4"
 multiprecision = { git = "ssh://git@github.com/geometryresearch/multiprecision.git" }
 num-bigint = "0.4.4"
 serial_test = "3.0.0"
+stopwatch = "0.0.7"

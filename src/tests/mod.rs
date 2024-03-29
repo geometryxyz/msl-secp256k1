@@ -12,3 +12,5 @@ pub mod ff_sub;
 pub mod mont_mul_optimised;
 #[cfg(test)]
 pub mod mont_mul_modified;
+#[cfg(test)]
+pub mod mont_benchmarks;
