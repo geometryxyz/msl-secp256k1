@@ -4,5 +4,5 @@
 #define LOG_LIMB_SIZE 13
 #define TWO_POW_WORD_SIZE 8192
 #define MASK 8191
-#define N0 5425
-#define NSAFE 1
+#define N0 0
+#define NSAFE 0

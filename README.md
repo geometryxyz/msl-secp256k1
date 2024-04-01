@@ -19,17 +19,29 @@ The cofactor is 1.
 The curve formula: $y^2 = x^3 + ax + b$ where:
 
 $a = 0$
+
 $b = 7$
 
 In projective coordinates, the point at infinity is `x: 0; y: 1; z: 0`.
 
-In projective coordinates, the point at infinity is:
+In projective coordinates, the generator point is:
 
 ```
 x: 55066263022277343669578718895168534326250603453777594175500187360389116729240
 y: 32670510020758816978083085130507043184471273380659243275938904335757337482424
 z: 1
 ```
+
+## Algorithms included in this repository
+
+We have implemented these algorithms in Metal:
+
+- Jacobian formulae:
+    - add-2007-bl
+    - dbl-2009-l
+
+
+## Notes
 
 ### Representations for fast curve arithmetic
 
@@ -51,11 +63,6 @@ computations are relevant to secp256k1:
     - Need to read https://link.springer.com/content/pdf/10.1007/3-540-45664-3_20.pdf
 
 Implementation of Jacobian algos in Go: https://gist.github.com/fomichev/9f9f4a11cd93196067a6ac10ed1a5686
-
-We have implemented these algorithms in Metal:
-
-- add-2007-bl
-
 
 
 ### Precomputation
