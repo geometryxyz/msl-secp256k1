@@ -15,6 +15,22 @@ pub fn create_buffer(
     )
 }
 
+pub fn read_buffer(
+    result_buf: &metal::Buffer,
+    num_u32s: usize,
+) -> Vec<u32> {
+    let ptr = result_buf.contents() as *const u32;
+    let result_limbs: Vec<u32>;
+
+    // Check if ptr is not null
+    if !ptr.is_null() {
+        result_limbs = unsafe { std::slice::from_raw_parts(ptr, num_u32s) }.to_vec();
+    } else {
+        panic!("Pointer is null");
+    }
+    result_limbs
+}
+
 pub fn create_empty_buffer(
     device: &Device,
     size: usize

@@ -5,6 +5,7 @@ use crate::shader::{ write_constants, compile_metal };
 use crate::gpu::{
     get_default_device,
     create_buffer,
+    read_buffer,
     create_empty_buffer
 };
 
@@ -72,17 +73,7 @@ pub fn test_ff_sub() {
     command_buffer.commit();
     command_buffer.wait_until_completed();
 
-    let ptr = result_buf.contents() as *const u32;
-    let result_limbs: Vec<u32>;
-
-    // Check if ptr is not null
-    if !ptr.is_null() {
-        let len = num_limbs;
-        result_limbs = unsafe { std::slice::from_raw_parts(ptr, len) }.to_vec();
-    } else {
-        panic!("Pointer is null");
-    }
-
+    let result_limbs: Vec<u32> = read_buffer(&result_buf, num_limbs);
     let result = bigint::to_biguint_le(&result_limbs, num_limbs, log_limb_size);
     assert!(result == expected);
     assert!(result_limbs == expected_limbs);
