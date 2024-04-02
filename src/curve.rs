@@ -262,7 +262,7 @@ pub mod tests {
         let a_proj = curve::affine_to_projectivexyz(&a);
         let b_proj = curve::affine_to_projectivexyz(&b);
 
-        // Compute the sum in Jacobian form
+        // Compute the sum in Projective form
         let expected_1 = curve::projective_add_2007_bl_unsafe(&a_proj, &b_proj);
         let expected_1_affine = curve::projectivexyz_to_affine(&expected_1);
 
@@ -386,13 +386,12 @@ pub mod tests {
         let rinv = res.0;
         let n0 = res.1;
 
-        // Generate 2 different affine points which are not the point at infinity
         let point = Affine::generator();
         let a: Affine = point.mul(Fr::from(2u32)).into_affine();
 
         let a_proj = curve::affine_to_projectivexyz(&a);
 
-        // Compute the sum in Jacobian form
+        // Compute the sum in Projective form
         let expected_1 = curve::projective_dbl_2007_bl_unsafe(&a_proj);
         let expected_1_affine = curve::projectivexyz_to_affine(&expected_1);
 
