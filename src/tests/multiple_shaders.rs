@@ -37,8 +37,7 @@ pub fn test_ff_add_and_sub() {
     let command_buffer = command_queue.new_command_buffer();
 
     // Shader 1
-    let compute_pass_descriptor = ComputePassDescriptor::new();
-    let encoder = command_buffer.compute_command_encoder_with_descriptor(compute_pass_descriptor);
+    let encoder = command_buffer.compute_command_encoder_with_descriptor(ComputePassDescriptor::new());
 
     write_constants("./metal/tests/", num_limbs, log_limb_size, 0, 0);
     let library_path = compile_metal("./metal/tests/", "ff_add.metal");
@@ -74,8 +73,7 @@ pub fn test_ff_add_and_sub() {
     encoder.end_encoding();
 
     // Shader 2
-    let compute_pass_descriptor = ComputePassDescriptor::new();
-    let encoder = command_buffer.compute_command_encoder_with_descriptor(compute_pass_descriptor);
+    let encoder = command_buffer.compute_command_encoder_with_descriptor(ComputePassDescriptor::new());
 
     write_constants("./metal/tests/", num_limbs, log_limb_size, 0, 0);
     let library_path = compile_metal("./metal/tests/", "ff_sub.metal");
