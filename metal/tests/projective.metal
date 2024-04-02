@@ -58,3 +58,40 @@ Projective projective_add_2007_bl_unsafe(
     result.z = z3;
     return result;
 }
+
+Projective projective_dbl_2007_bl_unsafe(
+    Projective a,
+    BigInt p
+) {
+    BigInt x1 = a.x;
+    BigInt y1 = a.y;
+    BigInt z1 = a.z;
+
+    BigInt xx = mont_mul_optimised(x1, x1, p);
+    BigInt xx2 = ff_add(xx, xx, p);
+    BigInt w = ff_add(xx2, xx, p);
+    BigInt y1z1 = mont_mul_optimised(y1, z1, p);
+    BigInt s = ff_add(y1z1, y1z1, p);
+    BigInt ss = mont_mul_optimised(s, s, p);
+    BigInt sss = mont_mul_optimised(s, ss, p);
+    BigInt r = mont_mul_optimised(y1, s, p);
+    BigInt rr = mont_mul_optimised(r, r, p);
+    BigInt xxrr = ff_add(xx, rr, p);
+    BigInt x1r = ff_add(x1, r, p);
+    BigInt x1r2 = mont_mul_optimised(x1r, x1r, p);
+    BigInt b = ff_sub(x1r2, xxrr, p);
+    BigInt b2 = ff_add(b, b, p);
+    BigInt w2 = mont_mul_optimised(w, w, p);
+    BigInt h = ff_sub(w2, b2, p);
+    BigInt x3 = mont_mul_optimised(h, s, p);
+    BigInt rr2 = ff_add(rr, rr, p);
+    BigInt bh = ff_sub(b, h, p);
+    BigInt wbh = mont_mul_optimised(w, bh, p);
+    BigInt y3 = ff_sub(wbh, rr2, p);
+
+    Projective result;
+    result.x = x3;
+    result.y = y3;
+    result.z = sss;
+    return result;
+}
